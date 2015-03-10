@@ -45,7 +45,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Concrete\BaseHaunting.cs" />
+    <Compile Include="Concrete\Hauntings\BaseHaunting.cs" />
     <Compile Include="Concrete\WorldEdits\SwitchEdit.cs" />
     <Compile Include="Concrete\WorldEdits\TileEdit.cs" />
     <Compile Include="Herobrine.cs" />
