@@ -234,7 +234,9 @@ namespace Herobrine
             else
             {
                 args.Player.SendErrorMessage("Invalid arguments for the chosen condition.");
-                args.Player.SendErrorMessage(GetEndConditionHelpText(endCondition.GetType().Name));
+                ForeachAttribute<HauntingEndConditionAttribute>(endCondition.GetType(),
+                    attribute => args.Player.SendErrorMessage(attribute.HelpText));
+                return;
             }
         }
 
