@@ -205,15 +205,26 @@ namespace Herobrine
             //Send the condition params to the condition. It decides if they are valid.
             if (endCondition.ParseParameters(endConditionArgs))
             {
-                Manager.AddHaunting(haunting, endCondition);
+                //One last try-catch, for good measure.
+                try
+                {
+                    Manager.AddHaunting(haunting, endCondition);
+                }
+                catch (Exception e)
+                {
+                    //Gracefully log errors and exit should there be an issue.
+                    args.Player.SendErrorMessage(
+                        "An error has occured in the command. Please notify your server administrator. The exception is logged.");
+                    TShockAPI.TShock.Log.Error("Exception occured in Herobrine. Command was: {0}", args.Message);
+                    TShockAPI.TShock.Log.Error(e.ToString());
+                    return;
+                }
             }
             else
             {
                 args.Player.SendErrorMessage("Invalid arguments for the chosen condition.");
                 args.Player.SendErrorMessage(GetEndConditionHelpText(endCondition.GetType().Name));
             }
-
-
         }
 
         private void DisplayHauntingsHelp(TSPlayer target, int i)

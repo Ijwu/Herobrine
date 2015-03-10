@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Herobrine.Abstract;
 
 namespace Herobrine
@@ -32,6 +33,12 @@ namespace Herobrine
 
         public void AddHaunting(IHaunting haunting, IHauntingEndCondition endCondition)
         {
+            if (haunting == null)
+                throw new ArgumentNullException("haunting");
+
+            if (endCondition == null)
+                throw new ArgumentNullException("endCondition");
+
             Hauntings.Add(haunting, endCondition);
         }
 
