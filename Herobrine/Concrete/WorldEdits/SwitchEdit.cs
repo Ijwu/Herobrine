@@ -5,19 +5,19 @@ namespace Herobrine.Concrete.WorldEdits
 {
     public class SwitchEdit : IWorldEdit
     {
-        private int _x;
-        private int _y;
+        public int X { get; set; }
+        public int Y { get; set; }
 
         public SwitchEdit(int x, int y)
         {
-            _x = x;
-            _y = y;
+            X = x;
+            Y = y;
             Wiring.hitSwitch(x, y);
         }
 
         public void Revert()
         {
-            Wiring.hitSwitch(_x, _y);
+            Wiring.hitSwitch(X, Y);
         }
     }
 }

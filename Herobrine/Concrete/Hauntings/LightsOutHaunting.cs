@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Herobrine.Attributes;
 using Herobrine.Concrete.WorldEdits;
@@ -22,6 +23,20 @@ namespace Herobrine.Concrete.Hauntings
             126,
             149
         };
+
+        private static readonly short[] TurnedOffFrameX =
+        {
+            18,
+            18,
+            36,
+            54,
+            18,
+            18,
+            36,
+            54,
+            36,
+            54
+        };
         public LightsOutHaunting(Victim victim) : base(victim)
         {
             
@@ -35,11 +50,18 @@ namespace Herobrine.Concrete.Hauntings
                 var tile = Main.tile[point.X, point.Y];
                 if (SwitchableLightIds.Contains(tile.type))
                 {
-                    
-                    if (tile.inActive())
-                    {
-                        MakeEdit(new SwitchEdit(point.X, point.Y));   
-                    }
+                    var index = Array.IndexOf(SwitchableLightIds, tile.type);
+                    var turnedOffFrameX = TurnedOffFrameX[index];
+                    MakeEdit(new FrameEdit(point.X, point.Y, turnedOffFrameX, tile.frameY));
+                }
+            }
+
+            foreach (var worldEdit in Edits)
+            {
+                var worldEditPoint = new Point(worldEdit.X, worldEdit.Y);
+                if (!tilesInSquare.Contains(worldEditPoint))
+                {
+                    worldEdit.Revert();
                 }
             }
         }

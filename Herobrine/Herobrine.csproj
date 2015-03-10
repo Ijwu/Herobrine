@@ -20,6 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -38,16 +39,17 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="TerrariaServer">
-      <HintPath>..\..\..\Desktop\TShock\TerrariaServer.exe</HintPath>
+      <HintPath>..\..\..\..\Desktop\TShock\TerrariaServer.exe</HintPath>
     </Reference>
     <Reference Include="TShockAPI">
-      <HintPath>..\..\..\Desktop\TShock\ServerPlugins\TShockAPI.dll</HintPath>
+      <HintPath>..\..\..\..\Desktop\TShock\ServerPlugins\TShockAPI.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Attributes\HauntingAttribute.cs" />
     <Compile Include="Concrete\Hauntings\BaseHaunting.cs" />
     <Compile Include="Concrete\Hauntings\LightsOutHaunting.cs" />
+    <Compile Include="Concrete\WorldEdits\FrameEdit.cs" />
     <Compile Include="Concrete\WorldEdits\SwitchEdit.cs" />
     <Compile Include="Concrete\WorldEdits\TileEdit.cs" />
     <Compile Include="Herobrine.cs" />
