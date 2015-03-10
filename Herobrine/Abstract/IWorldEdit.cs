@@ -1,4 +1,4 @@
-﻿namespace Herobrine
+﻿namespace Herobrine.Abstract
 {
     public interface IWorldEdit
     {
