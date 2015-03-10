@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Herobrine.Abstract;
 using Herobrine.Attributes;
 using Herobrine.Concrete.WorldEdits;
 using Terraria;
@@ -56,14 +57,17 @@ namespace Herobrine.Concrete.Hauntings
                 }
             }
 
+            var toBeRemoved = new List<IWorldEdit>();
             foreach (var worldEdit in Edits)
             {
                 var worldEditPoint = new Point(worldEdit.X, worldEdit.Y);
                 if (!tilesInSquare.Contains(worldEditPoint))
                 {
                     worldEdit.Revert();
+                    toBeRemoved.Add(worldEdit);
                 }
             }
+            Edits.RemoveAll(x => toBeRemoved.Contains(x));
         }
     }
 }

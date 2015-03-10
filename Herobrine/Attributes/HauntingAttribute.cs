@@ -2,7 +2,7 @@
 
 namespace Herobrine.Attributes
 {
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
     public class HauntingAttribute : Attribute
     {
         public string Name { get; set; }
