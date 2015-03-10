@@ -30,7 +30,9 @@ namespace Herobrine.Concrete.Hauntings
 
         public void MakeEdit(IWorldEdit edit)
         {
+            edit.Edit();
             Edits.Add(edit);
+            Victim.Player.SendTileSquare(edit.X, edit.Y);
         }
     }
 }

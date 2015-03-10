@@ -5,6 +5,8 @@ namespace Herobrine.Concrete.WorldEdits
 {
     public class FrameEdit : IWorldEdit
     {
+        private readonly short _framex;
+        private readonly short _framey;
         public int X { get; set; }
         public int Y { get; set; }
         public short OldFrameX { get; private set; }
@@ -12,12 +14,19 @@ namespace Herobrine.Concrete.WorldEdits
 
         public FrameEdit(int x, int y, short framex, short framey)
         {
+            _framex = framex;
+            _framey = framey;
             X = x;
             Y = y;
-            OldFrameX = Main.tile[x, y].frameX;
-            OldFrameY = Main.tile[x, y].frameY;
-            Main.tile[x, y].frameX = framex;
-            Main.tile[x, y].frameY = framey;
+            
+        }
+
+        public void Edit()
+        {
+            OldFrameX = Main.tile[X, Y].frameX;
+            OldFrameY = Main.tile[X, Y].frameY;
+            Main.tile[X, Y].frameX = _framex;
+            Main.tile[X, Y].frameY = _framey;
         }
 
         public void Revert()

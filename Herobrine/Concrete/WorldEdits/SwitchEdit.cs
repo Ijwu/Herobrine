@@ -12,7 +12,11 @@ namespace Herobrine.Concrete.WorldEdits
         {
             X = x;
             Y = y;
-            Wiring.hitSwitch(x, y);
+        }
+
+        public void Edit()
+        {
+            Wiring.hitSwitch(X, Y);
         }
 
         public void Revert()
