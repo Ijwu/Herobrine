@@ -15,6 +15,7 @@ using Utils = TShockAPI.Utils;
 
 namespace Herobrine
 {
+    [ApiVersion(1,17)]
     public class Herobrine : TerrariaPlugin
     {
         public override string Name
@@ -137,10 +138,20 @@ namespace Herobrine
                     DisplayHauntingsHelp(target, 1);
                     return;
                 }
-                //If we found the haunt type successfully we're here now. Instantiate it.
+                //If we found the haunt type successfully we're here now. Check if the player has the permission to use the haunt.
+                var hauntingPermission = GetHauntingPermission(hauntName);
+                hauntingPermission = string.Format("herobrine.haunt.{0}", hauntingPermission);
+                if (!args.Player.Group.HasPermission(hauntingPermission))
+                {
+                    //If the player doesn't have the permission, let them know.
+                    args.Player.SendErrorMessage("You do not have permission to use the haunt '{0}'.", hauntName);
+                    return;
+                }
+
+                //Now try to instantiate it.
                 try
                 {
-                    haunting = (IHaunting) Activator.CreateInstance(type);
+                    haunting = (IHaunting) Activator.CreateInstance(type, new Victim(target));
                 }
                 catch(Exception e)
                 {
