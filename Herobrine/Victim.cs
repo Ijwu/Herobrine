@@ -1,4 +1,6 @@
-﻿using TShockAPI;
+﻿using System.Collections.Generic;
+using Terraria;
+using TShockAPI;
 
 namespace Herobrine
 {
@@ -9,6 +11,28 @@ namespace Herobrine
         public Victim(TSPlayer player)
         {
             Player = player;
+        }
+
+        /// <summary>
+        /// Returns a list of points containing all tiles in a square of the given length, centered on the player.
+        /// </summary>
+        public List<Point> GetTilesInSquare(int length)
+        {
+            var ret = new List<Point>();
+            var sideLength = length/2;
+            var playerX = Player.TileX;
+            var playerY = Player.TileY;
+            for (int i = 0; i < sideLength; i++)
+            {
+                for (int j = 0; j < sideLength; j++)
+                {
+                    ret.Add(new Point(playerX - i, playerY - j));
+                    ret.Add(new Point(playerX + i, playerY - j));
+                    ret.Add(new Point(playerX - i, playerY + j));
+                    ret.Add(new Point(playerX + i, playerY + j));
+                }
+            }
+            return ret;
         }
     }
 }
