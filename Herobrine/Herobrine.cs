@@ -55,10 +55,17 @@ namespace Herobrine
 
         public override void Initialize()
         {
+            ServerApi.Hooks.GameUpdate.Register(this, OnUpdate);
+
             Commands.ChatCommands.Add(new Command("herobrine.haunt", HauntPlayer, "haunt"));
 
             HauntingTypes.Add(typeof (LightsOutHaunting));
             EndConditionTypes.Add(typeof (TimerEndCondition));
+        }
+
+        private void OnUpdate(EventArgs args)
+        {
+            Manager.Update();
         }
 
         private void HauntPlayer(CommandArgs args)
@@ -220,6 +227,7 @@ namespace Herobrine
                 try
                 {
                     Manager.AddHaunting(haunting, endCondition);
+                    args.Player.SendSuccessMessage("You have haunted {0}.", target.Name);
                 }
                 catch (Exception e)
                 {
