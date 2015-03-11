@@ -45,29 +45,65 @@ namespace Herobrine.Concrete.Hauntings
 
         public override void Update()
         {
+            Herobrine.Debug("LightsOut: Update start.");
+            //Get all tiles in an area around the player.
             var tilesInSquare = Victim.GetTilesInSquare(20);
+            //Foreach tile in the area.
             foreach (var point in tilesInSquare)
             {
+                //Check if it's already handled by the haunting.
+                if (IsBeingEdited(point.X, point.Y)) continue;
+                //If not already handled...
                 var tile = Main.tile[point.X, point.Y];
+                //If the tile is a light type that the haunting can handle.
                 if (SwitchableLightIds.Contains(tile.type))
                 {
+                    //Get the index in the tile id array.
                     var index = Array.IndexOf(SwitchableLightIds, tile.type);
-                    var turnedOffFrameX = TurnedOffFrameX[index];
-                    MakeEdit(new FrameEdit(point.X, point.Y, turnedOffFrameX, tile.frameY));
+                    //Get the final framex which is the TurnedOffFrameX + current frame x.
+                    //This ensures multi-tile compatibility.
+                    short initialTurnedOffFrameX = TurnedOffFrameX[index];
+                    short turnedOffFrameX = (short) (initialTurnedOffFrameX + tile.frameX);
+                    //The intialTurnedOffFrameX is the minimum required frameX to be off.
+                    //If the current frameX is less than it, that means the light is on and should be handled.
+                    //Check for tile.active() == true to make compatible with special torch handling.
+                    if (tile.frameX < initialTurnedOffFrameX && tile.active())
+                    {
+                        if (tile.type == 4)
+                        {
+                            //Special case handling for torches because Terraria is badly coded.
+                            Tile newTile = new Tile(tile);
+                            newTile.active(false);
+                            MakeEdit(new TileEdit(point.X, point.Y, newTile));
+                        }
+                        else
+                        {
+                            MakeEdit(new FrameEdit(point.X, point.Y, turnedOffFrameX, tile.frameY));
+                        }
+                    }
                 }
             }
 
             var toBeRemoved = new List<IWorldEdit>();
+            //Checking if a tile is out of range now.
             foreach (var worldEdit in Edits)
             {
                 var worldEditPoint = new Point(worldEdit.X, worldEdit.Y);
+                //Check if the list of tiles around the player contains a point representing the IWorldEdit.
                 if (!tilesInSquare.Contains(worldEditPoint))
                 {
-                    worldEdit.Revert();
+                    //If it's not in the list then it's too far away. Add it to the list to be removed.
+                    Herobrine.Debug("LightsOut: Tile is out of bounds. TilePos: ({0},{1})", worldEdit.X, worldEdit.Y);
                     toBeRemoved.Add(worldEdit);
                 }
             }
-            Edits.RemoveAll(x => toBeRemoved.Contains(x));
+            //Revert each tile in the list toBeRemoved.
+            //We didn't do this in the foreach because it would alter the collection as it enumerated it. (big nono)
+            foreach (var worldEdit in toBeRemoved)
+            {
+                RevertEdit(worldEdit);
+            }
+            Herobrine.Debug("LightsOut: Update end.");
         }
     }
 }

@@ -42,6 +42,8 @@ namespace Herobrine
         public static List<Type> EndConditionTypes { get; private set; }
         public HauntingManager Manager { get; set; }
 
+        internal static bool Debugging { get; set; }
+
         static Herobrine()
         {
             HauntingTypes = new List<Type>();
@@ -50,7 +52,18 @@ namespace Herobrine
 
         public Herobrine(Main game) : base(game)
         {
+#if DEBUG
+            Debugging = true;
+#else
+            Debugging = false;
+#endif
             Manager = new HauntingManager();
+        }
+
+        internal static void Debug(string text, params object[] parms)
+        {
+            if (Debugging)
+                TShock.Log.ConsoleInfo(text, parms);
         }
 
         public override void Initialize()
@@ -271,7 +284,7 @@ namespace Herobrine
             string ret = null;
             foreach (var hauntingType in HauntingTypes)
             {
-                ForeachAttribute<HauntingAttribute>(hauntingType, delegate(HauntingAttribute haunt)
+                ForeachAttribute(hauntingType, delegate(HauntingAttribute haunt)
                 {
                     if (haunt.Name.ToLower() == name.ToLower())
                     {
@@ -287,7 +300,7 @@ namespace Herobrine
             var ret = new List<string>();
             foreach (var hauntingType in HauntingTypes)
             {
-                ForeachAttribute<HauntingAttribute>(hauntingType, delegate(HauntingAttribute haunt)
+                ForeachAttribute(hauntingType, delegate(HauntingAttribute haunt)
                 {
                     ret.Add(haunt.Name);
                 });
@@ -300,7 +313,7 @@ namespace Herobrine
             Type ret = null;
             foreach (var hauntingType in HauntingTypes)
             {
-                ForeachAttribute<HauntingAttribute>(hauntingType, delegate(HauntingAttribute attribute)
+                ForeachAttribute(hauntingType, delegate(HauntingAttribute attribute)
                 {
                     if (attribute.Name.ToLower() == name.ToLower())
                     {
@@ -317,7 +330,7 @@ namespace Herobrine
             Type ret = null;
             foreach (var endConditionType in EndConditionTypes)
             {
-                ForeachAttribute<HauntingEndConditionAttribute>(endConditionType,
+                ForeachAttribute(endConditionType,
                     delegate(HauntingEndConditionAttribute cond)
                     {
                         if (cond.Name.ToLower() == name.ToLower())
@@ -333,7 +346,7 @@ namespace Herobrine
             var ret = new List<string>();
             foreach (var endConditionType in EndConditionTypes)
             {
-                ForeachAttribute<HauntingEndConditionAttribute>(endConditionType, delegate(HauntingEndConditionAttribute cond)
+                ForeachAttribute(endConditionType, delegate(HauntingEndConditionAttribute cond)
                 {
                     ret.Add(cond.Name);
                 });
@@ -346,7 +359,7 @@ namespace Herobrine
             string ret = null;
             foreach (var conditionType in EndConditionTypes)
             {
-                ForeachAttribute<HauntingEndConditionAttribute>(conditionType, delegate(HauntingEndConditionAttribute haunt)
+                ForeachAttribute(conditionType, delegate(HauntingEndConditionAttribute haunt)
                 {
                     if (haunt.Name.ToLower() == name.ToLower())
                     {

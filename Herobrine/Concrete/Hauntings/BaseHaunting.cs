@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Herobrine.Abstract;
 
 namespace Herobrine.Concrete.Hauntings
@@ -20,12 +21,15 @@ namespace Herobrine.Concrete.Hauntings
             throw new System.NotImplementedException();
         }
 
-        public void CleanUp()
+        public virtual void CleanUp()
         {
+            Herobrine.Debug("Haunting cleanup start.");
             foreach (var worldEdit in Edits)
             {
                 worldEdit.Revert();
+                Victim.Player.SendTileSquare(worldEdit.X, worldEdit.Y);
             }
+            Herobrine.Debug("Haunting cleanup end.");
         }
 
         public void MakeEdit(IWorldEdit edit)
@@ -33,6 +37,21 @@ namespace Herobrine.Concrete.Hauntings
             edit.Edit();
             Edits.Add(edit);
             Victim.Player.SendTileSquare(edit.X, edit.Y);
+        }
+
+        public void RevertEdit(IWorldEdit edit)
+        {
+            if (Edits.Contains(edit))
+            {
+                edit.Revert();
+                Victim.Player.SendTileSquare(edit.X, edit.Y);
+                Edits.Remove(edit);
+            }
+        }
+
+        public bool IsBeingEdited(int x, int y)
+        {
+            return Edits.Any(worldEdit => worldEdit.X == x && worldEdit.Y == y);
         }
     }
 }
