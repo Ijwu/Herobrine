@@ -11,5 +11,10 @@
         /// Used to undo any changes made to the world after the victim is done being haunted.
         /// </summary>
         void CleanUp();
+
+        /// <summary>
+        /// The player this haunting targets.
+        /// </summary>
+        Victim Victim { get; }
     }
 }

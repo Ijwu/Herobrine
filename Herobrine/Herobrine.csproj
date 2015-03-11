@@ -53,6 +53,8 @@
     <Compile Include="Abstract\IHauntingEndCondition.cs" />
     <Compile Include="Attributes\HauntingAttribute.cs" />
     <Compile Include="Attributes\HauntingEndConditionAttribute.cs" />
+    <Compile Include="Concrete\Conditions\DeathEndCondition.cs" />
+    <Compile Include="Concrete\Conditions\LogOutEndCondition.cs" />
     <Compile Include="Concrete\Conditions\TimerEndCondition.cs" />
     <Compile Include="Concrete\Hauntings\BaseHaunting.cs" />
     <Compile Include="Concrete\Hauntings\LightsOutHaunting.cs" />

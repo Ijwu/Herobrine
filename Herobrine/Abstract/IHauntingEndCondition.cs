@@ -16,5 +16,10 @@ namespace Herobrine.Abstract
         /// <param name="parameters">Parameters to the end condition.</param>
         /// <returns>True if there was no error in parsing.</returns>
         bool ParseParameters(List<string> parameters);
+
+        /// <summary>
+        /// The haunting which this condition decides the status of.
+        /// </summary>
+        IHaunting Haunting { get; }
     }
 }

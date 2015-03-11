@@ -220,7 +220,7 @@ namespace Herobrine
                 try
                 {
                     //Instantiate the condition.
-                    endCondition = (IHauntingEndCondition) Activator.CreateInstance(type);
+                    endCondition = (IHauntingEndCondition) Activator.CreateInstance(type, haunting);
                 }
                 catch (Exception e)
                 {

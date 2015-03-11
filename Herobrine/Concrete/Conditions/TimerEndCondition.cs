@@ -9,9 +9,16 @@ namespace Herobrine.Concrete.Conditions
     [HauntingEndCondition("timer", "Arguments: [time in seconds]", "timer")]
     public class TimerEndCondition : IHauntingEndCondition
     {
+        public IHaunting Haunting { get; set; }
+
         public Timer Timer { get; set; }
 
         public bool Elapsed { get; set; }
+
+        public TimerEndCondition(IHaunting haunting)
+        {
+            Haunting = haunting;
+        }
 
         public bool Update()
         {
