@@ -47,7 +47,7 @@ namespace Herobrine.Concrete.Hauntings
         {
             Herobrine.Debug("LightsOut: Update start.");
             //Get all tiles in an area around the player.
-            var tilesInSquare = Victim.GetTilesInSquare(20);
+            var tilesInSquare = Victim.GetTilesInSquare(80);
             //Foreach tile in the area.
             foreach (var point in tilesInSquare)
             {
