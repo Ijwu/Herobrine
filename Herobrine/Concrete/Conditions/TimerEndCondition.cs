@@ -6,7 +6,7 @@ using Herobrine.Attributes;
 
 namespace Herobrine.Concrete.Conditions
 {
-    [HauntingEndCondition("timer", "Arguments: [time in seconds]")]
+    [HauntingEndCondition("timer", "Arguments: [time in seconds]", "timer")]
     public class TimerEndCondition : IHauntingEndCondition
     {
         public Timer Timer { get; set; }
