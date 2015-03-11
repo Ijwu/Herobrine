@@ -161,7 +161,7 @@ namespace Herobrine
                 //If we found the haunt type successfully we're here now. Check if the player has the permission to use the haunt.
                 var hauntingPermission = GetHauntingPermission(hauntName);
                 hauntingPermission = string.Format("herobrine.haunting.{0}", hauntingPermission);
-                if (!args.Player.Group.HasPermission(hauntingPermission))
+                if (!args.Player.Group.HasPermission(hauntingPermission) || !args.Player.Group.HasPermission("herobrine.haunting.*"))
                 {
                     //If the player doesn't have the permission, let them know.
                     args.Player.SendErrorMessage("You do not have permission to use the haunt '{0}'.", hauntName);
@@ -209,7 +209,7 @@ namespace Herobrine
                 //Check if the player has the permission to use the condition.
                 var conditionPermission = GetEndConditionPermission(conditionName);
                 conditionPermission = string.Format("herobrine.condition.{0}", conditionPermission);
-                if (!args.Player.Group.HasPermission(conditionPermission))
+                if (!args.Player.Group.HasPermission(conditionPermission) || !args.Player.Group.HasPermission("herobrine.condition.*"))
                 {
                     //If the player doesn't have the permission, let them know.
                     args.Player.SendErrorMessage("You do not have permission to use the end condition '{0}'.", conditionName);
