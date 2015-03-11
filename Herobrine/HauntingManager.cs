@@ -27,7 +27,7 @@ namespace Herobrine
             }
             foreach (var haunting in toBeRemoved)
             {
-                Hauntings.Remove(haunting);
+                RemoveHaunting(haunting);
             }
         }
 
@@ -46,6 +46,7 @@ namespace Herobrine
         {
             if (Hauntings.ContainsKey(haunting))
             {
+                haunting.CleanUp();
                 Hauntings.Remove(haunting);
             }
         }
