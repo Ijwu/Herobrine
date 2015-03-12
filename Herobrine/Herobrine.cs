@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Herobrine.Abstract;
 using Herobrine.Attributes;
@@ -41,6 +42,7 @@ namespace Herobrine
         public static List<Type> HauntingTypes { get; private set; }
         public static List<Type> EndConditionTypes { get; private set; }
         public HauntingManager Manager { get; set; }
+        private Timer UpdateTimer { get; set; }
 
         internal static bool Debugging { get; set; }
 
@@ -58,6 +60,7 @@ namespace Herobrine
             Debugging = false;
 #endif
             Manager = new HauntingManager();
+            UpdateTimer = new Timer(OnUpdate, null, Timeout.Infinite, 1000/60);
         }
 
         internal static void Debug(string text, params object[] parms)
@@ -68,15 +71,15 @@ namespace Herobrine
 
         public override void Initialize()
         {
-            ServerApi.Hooks.GameUpdate.Register(this, OnUpdate);
-
             Commands.ChatCommands.Add(new Command("herobrine.haunt", HauntPlayer, "haunt"));
 
             HauntingTypes.Add(typeof (LightsOutHaunting));
             EndConditionTypes.Add(typeof (TimerEndCondition));
+
+            UpdateTimer.Change(0, 1000/60);
         }
 
-        private void OnUpdate(EventArgs args)
+        private void OnUpdate(object state)
         {
             Manager.Update();
         }
