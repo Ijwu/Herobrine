@@ -4,7 +4,7 @@ using Herobrine.Abstract;
 
 namespace Herobrine.Concrete.Hauntings
 {
-    class BaseHaunting : IHaunting
+    public class BaseHaunting : IHaunting
     {
         public Victim Victim { get; private set; }
         public List<IWorldEdit> Edits { get; private set; }

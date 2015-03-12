@@ -162,7 +162,7 @@ namespace Herobrine
                     return;
                 }
                 //If we found the haunt type successfully we're here now. Check if the player has the permission to use the haunt.
-                var hauntingPermission = GetHauntingPermission(hauntName);
+                var hauntingPermission = GetHauntingItemPermission(hauntName);
                 hauntingPermission = string.Format("herobrine.haunting.{0}", hauntingPermission);
                 if (!args.Player.Group.HasPermission(hauntingPermission) || !args.Player.Group.HasPermission("herobrine.haunting.*"))
                 {
@@ -210,7 +210,7 @@ namespace Herobrine
                 }
 
                 //Check if the player has the permission to use the condition.
-                var conditionPermission = GetEndConditionPermission(conditionName);
+                var conditionPermission = GetHauntingItemPermission(conditionName);
                 conditionPermission = string.Format("herobrine.condition.{0}", conditionPermission);
                 if (!args.Player.Group.HasPermission(conditionPermission) || !args.Player.Group.HasPermission("herobrine.condition.*"))
                 {
@@ -269,7 +269,7 @@ namespace Herobrine
             else
             {
                 args.Player.SendErrorMessage("Invalid arguments for the chosen condition.");
-                ForeachAttribute<HauntingEndConditionAttribute>(endCondition.GetType(),
+                ForeachAttribute<HauntingItemDescriptionAttribute>(endCondition.GetType(),
                     attribute => args.Player.SendErrorMessage(attribute.HelpText));
                 return;
             }
@@ -278,7 +278,7 @@ namespace Herobrine
         private void DisplayHauntingsHelp(TSPlayer target, int i)
         {
             PaginationTools.SendPage(target, i, PaginationTools.BuildLinesFromTerms(GetHauntingNamesList(),
-                o => string.Format("{0} - Permission: {1}", o, GetHauntingPermission((string) o))), new PaginationTools.Settings()
+                o => string.Format("{0} - Permission: {1} - {2}", o, GetHauntingItemPermission((string) o), GetHauntingItemHelpText((string) o))), new PaginationTools.Settings()
                 {
                     FooterFormat = "Type /haunt -h {0} for more."
                 });
@@ -287,18 +287,34 @@ namespace Herobrine
         private void DisplayConditionsHelp(TSPlayer target, int i)
         {
             PaginationTools.SendPage(target, i, PaginationTools.BuildLinesFromTerms(GetEndConditionNamesList(),
-                o => string.Format("{0} - {1}", o, GetEndConditionHelpText((string)o))), new PaginationTools.Settings()
+                o => string.Format("{0} - Permission: {1} - {2}", o, GetHauntingItemPermission((string)o), GetHauntingItemHelpText((string)o))), new PaginationTools.Settings()
                 {
                     FooterFormat = "Type /haunt -c {0} for more."
                 });
         }
 
-        private string GetHauntingPermission(string name)
+        private string GetHauntingItemHelpText(string name)
+        {
+            string ret = null;
+            foreach (var conditionType in EndConditionTypes)
+            {
+                ForeachAttribute(conditionType, delegate(HauntingItemDescriptionAttribute haunt)
+                {
+                    if (haunt.Name.ToLower() == name.ToLower())
+                    {
+                        ret = haunt.HelpText;
+                    }
+                });
+            }
+            return ret;
+        }
+
+        private string GetHauntingItemPermission(string name)
         {
             string ret = null;
             foreach (var hauntingType in HauntingTypes)
             {
-                ForeachAttribute(hauntingType, delegate(HauntingAttribute haunt)
+                ForeachAttribute(hauntingType, delegate(HauntingItemDescriptionAttribute haunt)
                 {
                     if (haunt.Name.ToLower() == name.ToLower())
                     {
@@ -314,7 +330,7 @@ namespace Herobrine
             var ret = new List<string>();
             foreach (var hauntingType in HauntingTypes)
             {
-                ForeachAttribute(hauntingType, delegate(HauntingAttribute haunt)
+                ForeachAttribute(hauntingType, delegate(HauntingItemDescriptionAttribute haunt)
                 {
                     ret.Add(haunt.Name);
                 });
@@ -327,7 +343,7 @@ namespace Herobrine
             Type ret = null;
             foreach (var hauntingType in HauntingTypes)
             {
-                ForeachAttribute(hauntingType, delegate(HauntingAttribute attribute)
+                ForeachAttribute(hauntingType, delegate(HauntingItemDescriptionAttribute attribute)
                 {
                     if (attribute.Name.ToLower() == name.ToLower())
                     {
@@ -345,7 +361,7 @@ namespace Herobrine
             foreach (var endConditionType in EndConditionTypes)
             {
                 ForeachAttribute(endConditionType,
-                    delegate(HauntingEndConditionAttribute cond)
+                    delegate(HauntingItemDescriptionAttribute cond)
                     {
                         if (cond.Name.ToLower() == name.ToLower())
                             // ReSharper disable once AccessToForEachVariableInClosure
@@ -360,41 +376,9 @@ namespace Herobrine
             var ret = new List<string>();
             foreach (var endConditionType in EndConditionTypes)
             {
-                ForeachAttribute(endConditionType, delegate(HauntingEndConditionAttribute cond)
+                ForeachAttribute(endConditionType, delegate(HauntingItemDescriptionAttribute cond)
                 {
                     ret.Add(cond.Name);
-                });
-            }
-            return ret;
-        }
-
-        private string GetEndConditionHelpText(string name)
-        {
-            string ret = null;
-            foreach (var conditionType in EndConditionTypes)
-            {
-                ForeachAttribute(conditionType, delegate(HauntingEndConditionAttribute haunt)
-                {
-                    if (haunt.Name.ToLower() == name.ToLower())
-                    {
-                        ret = haunt.HelpText;
-                    }
-                });
-            }
-            return ret;
-        }
-
-        private string GetEndConditionPermission(string name)
-        {
-            string ret = null;
-            foreach (var conditionType in EndConditionTypes)
-            {
-                ForeachAttribute(conditionType, delegate(HauntingEndConditionAttribute haunt)
-                {
-                    if (haunt.Name.ToLower() == name.ToLower())
-                    {
-                        ret = haunt.Permission;
-                    }
                 });
             }
             return ret;

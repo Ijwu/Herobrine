@@ -8,7 +8,7 @@ using Terraria;
 
 namespace Herobrine.Concrete.Hauntings
 {
-    [Haunting("LightsOut", "lightsout")]
+    [HauntingItemDescription("LightsOut", "Turns off all lights around a player.", "lightsout")]
     class LightsOutHaunting : BaseHaunting
     {
         private static readonly int[] SwitchableLightIds =
