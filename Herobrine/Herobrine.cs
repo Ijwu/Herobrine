@@ -75,6 +75,8 @@ namespace Herobrine
 
             HauntingTypes.Add(typeof (LightsOutHaunting));
             EndConditionTypes.Add(typeof (TimerEndCondition));
+            EndConditionTypes.Add(typeof (DeathEndCondition));
+            EndConditionTypes.Add(typeof (LogOutEndCondition));
 
             UpdateTimer.Change(0, 1000/60);
         }
@@ -296,7 +298,7 @@ namespace Herobrine
         private string GetHauntingItemHelpText(string name)
         {
             string ret = null;
-            foreach (var conditionType in EndConditionTypes)
+            foreach (var conditionType in EndConditionTypes.Concat(HauntingTypes))
             {
                 ForeachAttribute(conditionType, delegate(HauntingItemDescriptionAttribute haunt)
                 {
@@ -312,7 +314,7 @@ namespace Herobrine
         private string GetHauntingItemPermission(string name)
         {
             string ret = null;
-            foreach (var hauntingType in HauntingTypes)
+            foreach (var hauntingType in HauntingTypes.Concat(EndConditionTypes))
             {
                 ForeachAttribute(hauntingType, delegate(HauntingItemDescriptionAttribute haunt)
                 {

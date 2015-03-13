@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using Herobrine.Abstract;
+using Herobrine.Attributes;
 
 namespace Herobrine.Concrete.Conditions
 {
+    [HauntingItemDescription("logout", "Stops the haunting when the player logs out.", "logout")]
     public class LogOutEndCondition : IHauntingEndCondition
     {
         public IHaunting Haunting { get; set; }

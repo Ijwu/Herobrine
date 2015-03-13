@@ -6,7 +6,7 @@ using Herobrine.Attributes;
 
 namespace Herobrine.Concrete.Conditions
 {
-    [HauntingItemDescription("timer", "Arguments: [time in seconds]", "timer")]
+    [HauntingItemDescription("timer", "Stops the haunting after a certain time. Arguments: [time in seconds]", "timer")]
     public class TimerEndCondition : IHauntingEndCondition
     {
         public IHaunting Haunting { get; set; }
