@@ -63,6 +63,7 @@
     <Compile Include="Concrete\Hauntings\BaseHaunting.cs" />
     <Compile Include="Concrete\Hauntings\LightsOutHaunting.cs" />
     <Compile Include="Concrete\Hauntings\NoBuildHaunting.cs" />
+    <Compile Include="Concrete\Repositories\JsonHauntingRepository.cs" />
     <Compile Include="Concrete\WorldEdits\FrameEdit.cs" />
     <Compile Include="Concrete\WorldEdits\SwitchEdit.cs" />
     <Compile Include="Concrete\WorldEdits\TileEdit.cs" />

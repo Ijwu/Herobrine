@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Terraria;
 using TShockAPI;
 
@@ -11,6 +12,11 @@ namespace Herobrine
         public Victim(TSPlayer player)
         {
             Player = player;
+        }
+
+        public Victim(int userId)
+        {
+            Player = TShock.Players.Single(x => x.UserID == userId);
         }
 
         /// <summary>
