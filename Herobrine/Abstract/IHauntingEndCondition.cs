@@ -18,6 +18,16 @@ namespace Herobrine.Abstract
         bool ParseParameters(List<string> parameters);
 
         /// <summary>
+        /// Saves the current EndCondition state to a dictionary.
+        /// </summary>
+        Dictionary<string, string> Save();
+
+        /// <summary>
+        /// Restores the EndCondition state from a dictionary.
+        /// </summary>
+        void Load(Dictionary<string, string> state);
+
+        /// <summary>
         /// The haunting which this condition decides the status of.
         /// </summary>
         IHaunting Haunting { get; }

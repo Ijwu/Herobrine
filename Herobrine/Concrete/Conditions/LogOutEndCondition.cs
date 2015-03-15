@@ -23,5 +23,15 @@ namespace Herobrine.Concrete.Conditions
         {
             return true;
         }
+
+        public Dictionary<string, string> Save()
+        {
+            return null;
+        }
+
+        public void Load(Dictionary<string, string> state)
+        {
+            
+        }
     }
 }

@@ -16,5 +16,9 @@
         /// The player this haunting targets.
         /// </summary>
         Victim Victim { get; }
+        /// <summary>
+        /// The end condition of this haunting. Should be a public get and set.
+        /// </summary>
+        IHauntingEndCondition EndCondition { get; set; }
     }
 }

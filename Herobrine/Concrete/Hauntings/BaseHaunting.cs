@@ -7,6 +7,9 @@ namespace Herobrine.Concrete.Hauntings
     public class BaseHaunting : IHaunting
     {
         public Victim Victim { get; private set; }
+
+        public IHauntingEndCondition EndCondition { get; set; }
+
         public List<IWorldEdit> Edits { get; private set; }
         
 

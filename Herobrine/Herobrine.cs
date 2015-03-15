@@ -39,17 +39,16 @@ namespace Herobrine
             get { return "Allows you to haunt a player. Spoopy."; }
         }
 
-        public static List<Type> HauntingTypes { get; private set; }
-        public static List<Type> EndConditionTypes { get; private set; }
         public HauntingManager Manager { get; set; }
         private Timer UpdateTimer { get; set; }
 
         internal static bool Debugging { get; set; }
 
+        public static readonly HauntingTypesContainer HauntingTypes;
+
         static Herobrine()
         {
-            HauntingTypes = new List<Type>();
-            EndConditionTypes = new List<Type>();
+            HauntingTypes = new HauntingTypesContainer();
         }
 
         public Herobrine(Main game) : base(game)
@@ -73,10 +72,10 @@ namespace Herobrine
         {
             Commands.ChatCommands.Add(new Command("herobrine.haunt", HauntPlayer, "haunt"));
 
-            HauntingTypes.Add(typeof (LightsOutHaunting));
-            EndConditionTypes.Add(typeof (TimerEndCondition));
-            EndConditionTypes.Add(typeof (DeathEndCondition));
-            EndConditionTypes.Add(typeof (LogOutEndCondition));
+            HauntingTypes.HauntingTypes.Add(typeof(LightsOutHaunting));
+            HauntingTypes.EndConditionTypes.Add(typeof(TimerEndCondition));
+            HauntingTypes.EndConditionTypes.Add(typeof(DeathEndCondition));
+            HauntingTypes.EndConditionTypes.Add(typeof(LogOutEndCondition));
 
             UpdateTimer.Change(0, 1000/60);
         }
@@ -105,11 +104,11 @@ namespace Herobrine
                         {
                             if (int.TryParse(args.Parameters[1], out page))
                             {
-                                DisplayHauntingsHelp(args.Player, page);
+                                HauntingTypes.DisplayHauntingsHelp(args.Player, page);
                                 return;
                             }
                         }
-                        DisplayHauntingsHelp(args.Player, page);
+                        HauntingTypes.DisplayHauntingsHelp(args.Player, page);
                         return;
                     }
                     case "-c":
@@ -119,11 +118,11 @@ namespace Herobrine
                         {
                             if (int.TryParse(args.Parameters[1], out page))
                             {
-                                DisplayConditionsHelp(args.Player, page);
+                                HauntingTypes.DisplayConditionsHelp(args.Player, page);
                                 return;
                             }
                         }
-                        DisplayConditionsHelp(args.Player, page);
+                        HauntingTypes.DisplayConditionsHelp(args.Player, page);
                         return;
                     }
                 }
@@ -155,16 +154,16 @@ namespace Herobrine
                 //Get haunting name.
                 var hauntName = args.Parameters[1];
                 //Try to get haunting type. Returns null if not found.
-                var type = GetHauntingTypeFromName(hauntName);
+                var type = HauntingTypes.GetHauntingTypeFromName(hauntName);
                 //If null, there's an error. Send them the haunts help page as a corrective measure.
                 if (type == null)
                 {
                     args.Player.SendInfoMessage("Incorrect haunting type '{0}'. Correct types are listed below.", hauntName);
-                    DisplayHauntingsHelp(target, 1);
+                    HauntingTypes.DisplayHauntingsHelp(target, 1);
                     return;
                 }
                 //If we found the haunt type successfully we're here now. Check if the player has the permission to use the haunt.
-                var hauntingPermission = GetHauntingItemPermission(hauntName);
+                var hauntingPermission = HauntingTypes.GetHauntingItemPermission(hauntName);
                 hauntingPermission = string.Format("herobrine.haunting.{0}", hauntingPermission);
                 if (!args.Player.Group.HasPermission(hauntingPermission) || !args.Player.Group.HasPermission("herobrine.haunting.*"))
                 {
@@ -183,8 +182,8 @@ namespace Herobrine
                     //Gracefully log errors and exit should there be an issue.
                     args.Player.SendErrorMessage(
                         "An error has occured in the command. Please notify your server administrator. The exception is logged.");
-                    TShockAPI.TShock.Log.Error("Exception occured in Herobrine. Command was: {0}", args.Message);
-                    TShockAPI.TShock.Log.Error(e.ToString());
+                    TShock.Log.Error("Exception occured in Herobrine. Command was: {0}", args.Message);
+                    TShock.Log.Error(e.ToString());
                     return;
                 }
             }
@@ -201,18 +200,18 @@ namespace Herobrine
                 //Get end condition name.
                 var conditionName = args.Parameters[2];
                 //Get end condition type using its name.
-                var type = GetEndConditionTypeFromName(conditionName);
+                var type = HauntingTypes.GetEndConditionTypeFromName(conditionName);
 
                 //If the target was not found, show them the conditions help page.
                 if (type == null)
                 {
                     args.Player.SendInfoMessage("Incorrect condition type '{0}'. Correct types are listed below.", conditionName);
-                    DisplayConditionsHelp(target, 1);
+                    HauntingTypes.DisplayConditionsHelp(target, 1);
                     return;
                 }
 
                 //Check if the player has the permission to use the condition.
-                var conditionPermission = GetHauntingItemPermission(conditionName);
+                var conditionPermission = HauntingTypes.GetHauntingItemPermission(conditionName);
                 conditionPermission = string.Format("herobrine.condition.{0}", conditionPermission);
                 if (!args.Player.Group.HasPermission(conditionPermission) || !args.Player.Group.HasPermission("herobrine.condition.*"))
                 {
@@ -232,8 +231,8 @@ namespace Herobrine
                     //Gracefully log errors and exit should there be an issue.
                     args.Player.SendErrorMessage(
                         "An error has occured in the command. Please notify your server administrator. The exception is logged.");
-                    TShockAPI.TShock.Log.Error("Exception occured in Herobrine. Command was: {0}", args.Message);
-                    TShockAPI.TShock.Log.Error(e.ToString());
+                    TShock.Log.Error("Exception occured in Herobrine. Command was: {0}", args.Message);
+                    TShock.Log.Error(e.ToString());
                     return;
                 }
             }
@@ -263,136 +262,17 @@ namespace Herobrine
                     //Gracefully log errors and exit should there be an issue.
                     args.Player.SendErrorMessage(
                         "An error has occured in the command. Please notify your server administrator. The exception is logged.");
-                    TShockAPI.TShock.Log.Error("Exception occured in Herobrine. Command was: {0}", args.Message);
-                    TShockAPI.TShock.Log.Error(e.ToString());
+                    TShock.Log.Error("Exception occured in Herobrine. Command was: {0}", args.Message);
+                    TShock.Log.Error(e.ToString());
                     return;
                 }
             }
             else
             {
                 args.Player.SendErrorMessage("Invalid arguments for the chosen condition.");
-                ForeachAttribute<HauntingItemDescriptionAttribute>(endCondition.GetType(),
+                HauntingTypes.ForeachAttribute<HauntingItemDescriptionAttribute>(endCondition.GetType(),
                     attribute => args.Player.SendErrorMessage(attribute.HelpText));
                 return;
-            }
-        }
-
-        private void DisplayHauntingsHelp(TSPlayer target, int i)
-        {
-            PaginationTools.SendPage(target, i, PaginationTools.BuildLinesFromTerms(GetHauntingNamesList(),
-                o => string.Format("{0} - Permission: {1} - {2}", o, GetHauntingItemPermission((string) o), GetHauntingItemHelpText((string) o))), new PaginationTools.Settings()
-                {
-                    FooterFormat = "Type /haunt -h {0} for more."
-                });
-        }
-
-        private void DisplayConditionsHelp(TSPlayer target, int i)
-        {
-            PaginationTools.SendPage(target, i, PaginationTools.BuildLinesFromTerms(GetEndConditionNamesList(),
-                o => string.Format("{0} - Permission: {1} - {2}", o, GetHauntingItemPermission((string)o), GetHauntingItemHelpText((string)o))), new PaginationTools.Settings()
-                {
-                    FooterFormat = "Type /haunt -c {0} for more."
-                });
-        }
-
-        private string GetHauntingItemHelpText(string name)
-        {
-            string ret = null;
-            foreach (var conditionType in EndConditionTypes.Concat(HauntingTypes))
-            {
-                ForeachAttribute(conditionType, delegate(HauntingItemDescriptionAttribute haunt)
-                {
-                    if (haunt.Name.ToLower() == name.ToLower())
-                    {
-                        ret = haunt.HelpText;
-                    }
-                });
-            }
-            return ret;
-        }
-
-        private string GetHauntingItemPermission(string name)
-        {
-            string ret = null;
-            foreach (var hauntingType in HauntingTypes.Concat(EndConditionTypes))
-            {
-                ForeachAttribute(hauntingType, delegate(HauntingItemDescriptionAttribute haunt)
-                {
-                    if (haunt.Name.ToLower() == name.ToLower())
-                    {
-                        ret = haunt.Permission;
-                    }
-                });
-            }
-            return ret;
-        }
-
-        private List<string> GetHauntingNamesList()
-        {
-            var ret = new List<string>();
-            foreach (var hauntingType in HauntingTypes)
-            {
-                ForeachAttribute(hauntingType, delegate(HauntingItemDescriptionAttribute haunt)
-                {
-                    ret.Add(haunt.Name);
-                });
-            }
-            return ret;
-        }
-
-        private Type GetHauntingTypeFromName(string name)
-        {
-            Type ret = null;
-            foreach (var hauntingType in HauntingTypes)
-            {
-                ForeachAttribute(hauntingType, delegate(HauntingItemDescriptionAttribute attribute)
-                {
-                    if (attribute.Name.ToLower() == name.ToLower())
-                    {
-                        // ReSharper disable once AccessToForEachVariableInClosure
-                        ret = hauntingType;
-                    }
-                });
-            }
-            return ret;
-        }
-
-        private Type GetEndConditionTypeFromName(string name)
-        {
-            Type ret = null;
-            foreach (var endConditionType in EndConditionTypes)
-            {
-                ForeachAttribute(endConditionType,
-                    delegate(HauntingItemDescriptionAttribute cond)
-                    {
-                        if (cond.Name.ToLower() == name.ToLower())
-                            // ReSharper disable once AccessToForEachVariableInClosure
-                            ret = endConditionType;
-                    });
-            }
-            return ret;
-        }
-
-        private List<string> GetEndConditionNamesList()
-        {
-            var ret = new List<string>();
-            foreach (var endConditionType in EndConditionTypes)
-            {
-                ForeachAttribute(endConditionType, delegate(HauntingItemDescriptionAttribute cond)
-                {
-                    ret.Add(cond.Name);
-                });
-            }
-            return ret;
-        }
-
-        private void ForeachAttribute<T>(Type targetType, Action<T> func) where T : Attribute
-        {
-            var attributes = targetType.GetCustomAttributes(typeof (T), true);
-            foreach (var attribute in attributes)
-            {
-                var attr = attribute as T;
-                func(attr);
             }
         }
     }

@@ -6,11 +6,11 @@ namespace Herobrine
 {
     public class HauntingManager
     {
-        private Dictionary<IHaunting, IHauntingEndCondition> Hauntings { get; set; }
+        private List<IHaunting> Hauntings { get; set; }
 
         public HauntingManager()
         {
-            Hauntings = new Dictionary<IHaunting, IHauntingEndCondition>();
+            Hauntings = new List<IHaunting>();
         }
 
         public void Update()
@@ -18,12 +18,12 @@ namespace Herobrine
             var toBeRemoved = new List<IHaunting>();
             foreach (var haunting in Hauntings)
             {
-                if (haunting.Value.Update())
+                if (haunting.EndCondition.Update())
                 {
-                    toBeRemoved.Add(haunting.Key);
+                    toBeRemoved.Add(haunting);
                     continue;
                 }
-                haunting.Key.Update();
+                haunting.Update();
             }
             foreach (var haunting in toBeRemoved)
             {
@@ -39,12 +39,13 @@ namespace Herobrine
             if (endCondition == null)
                 throw new ArgumentNullException("endCondition");
 
-            Hauntings.Add(haunting, endCondition);
+            haunting.EndCondition = endCondition;
+            Hauntings.Add(haunting);
         }
 
         public void RemoveHaunting(IHaunting haunting)
         {
-            if (Hauntings.ContainsKey(haunting))
+            if (Hauntings.Contains(haunting))
             {
                 haunting.CleanUp();
                 Hauntings.Remove(haunting);
