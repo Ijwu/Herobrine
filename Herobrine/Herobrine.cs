@@ -40,6 +40,7 @@ namespace Herobrine
         }
 
         public HauntingManager Manager { get; set; }
+        public IHauntingRepository Repository { get; set; }
         private Timer UpdateTimer { get; set; }
 
         internal static bool Debugging { get; set; }
@@ -70,6 +71,9 @@ namespace Herobrine
 
         public override void Initialize()
         {
+            ServerApi.Hooks.ServerJoin.Register(this, OnJoin);
+            ServerApi.Hooks.ServerLeave.Register(this, OnLeave);
+
             Commands.ChatCommands.Add(new Command("herobrine.haunt", HauntPlayer, "haunt"));
 
             HauntingTypes.HauntingTypes.Add(typeof(LightsOutHaunting));
@@ -78,6 +82,23 @@ namespace Herobrine
             HauntingTypes.EndConditionTypes.Add(typeof(LogOutEndCondition));
 
             UpdateTimer.Change(0, 1000/60);
+        }
+
+        private void OnLeave(LeaveEventArgs args)
+        {
+            var userId = TShock.Players[args.Who].UserID;
+            Repository.SavePlayerHauntings(userId, Repository.GetHauntingsForPlayer(userId));
+        }
+
+        private void OnJoin(JoinEventArgs args)
+        {
+            var userId = TShock.Players[args.Who].UserID;
+            var hauntings = Repository.GetHauntingsForPlayer(userId);
+            foreach (var haunting in hauntings)
+            {
+                haunting.EndCondition.Resume();
+                Manager.AddHaunting(haunting);
+            }
         }
 
         private void OnUpdate(object state)
@@ -254,7 +275,8 @@ namespace Herobrine
                 //One last try-catch, for good measure.
                 try
                 {
-                    Manager.AddHaunting(haunting, endCondition);
+                    haunting.EndCondition = endCondition;
+                    Manager.AddHaunting(haunting);
                     args.Player.SendSuccessMessage("You have haunted {0}.", target.Name);
                 }
                 catch (Exception e)

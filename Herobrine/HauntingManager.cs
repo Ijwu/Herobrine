@@ -31,15 +31,11 @@ namespace Herobrine
             }
         }
 
-        public void AddHaunting(IHaunting haunting, IHauntingEndCondition endCondition)
+        public void AddHaunting(IHaunting haunting)
         {
             if (haunting == null)
                 throw new ArgumentNullException("haunting");
 
-            if (endCondition == null)
-                throw new ArgumentNullException("endCondition");
-
-            haunting.EndCondition = endCondition;
             Hauntings.Add(haunting);
         }
 

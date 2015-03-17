@@ -18,6 +18,12 @@ namespace Herobrine.Abstract
         bool ParseParameters(List<string> parameters);
 
         /// <summary>
+        /// Called when the end condition has been re-placed in the haunting manager.
+        /// Restarts the condition, in other words, from a ready stasis state.
+        /// </summary>
+        void Resume();
+
+        /// <summary>
         /// Saves the current EndCondition state to a dictionary.
         /// </summary>
         Dictionary<string, string> Save();

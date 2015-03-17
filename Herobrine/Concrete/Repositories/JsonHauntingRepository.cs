@@ -56,14 +56,14 @@ namespace Herobrine.Concrete.Repositories
             {
                 _hauntings.Add(userId, hauntings);
             }
-            SavePlayerHauntingsInternal(userId);
+            SavePlayerHauntingsToDisk(userId);
         }
 
-        private void SavePlayerHauntingsInternal(int userId)
+        private void SavePlayerHauntingsToDisk(int userId)
         {
             try
             {
-                var fs = new FileStream(Path.Combine(_dbPath, string.Format("{0}.{1}", userId, ".json")), FileMode.Open, FileAccess.Read);
+                var fs = new FileStream(Path.Combine(_dbPath, string.Format("{0}.{1}", userId, ".json")), FileMode.OpenOrCreate, FileAccess.Write);
                 var str = JsonConvert.SerializeObject(_hauntings[userId], Formatting.Indented);
                 using (var sw = new StreamWriter(fs))
                 {

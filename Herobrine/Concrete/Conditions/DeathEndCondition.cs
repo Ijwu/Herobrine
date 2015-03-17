@@ -25,6 +25,11 @@ namespace Herobrine.Concrete.Conditions
             return true;
         }
 
+        public void Resume()
+        {
+        
+        }
+
         public Dictionary<string, string> Save()
         {
             return null;

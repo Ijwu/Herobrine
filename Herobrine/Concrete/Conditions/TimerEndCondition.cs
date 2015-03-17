@@ -43,6 +43,14 @@ namespace Herobrine.Concrete.Conditions
             return true;
         }
 
+        public void Resume()
+        {
+            if (!Timer.Enabled)
+            {
+                Timer.Start();   
+            }
+        }
+
         public Dictionary<string, string> Save()
         {
             return new Dictionary<string, string>()
@@ -61,7 +69,6 @@ namespace Herobrine.Concrete.Conditions
                 {
                     Timer = new TimerPlus(timeLeft);
                     Timer.Elapsed += TimerOnElapsed;
-                    Timer.Start();
                 }
                 else
                 {
