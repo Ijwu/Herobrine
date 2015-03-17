@@ -14,7 +14,7 @@ namespace Herobrine.Concrete.Repositories
         public JsonHauntingRepository()
         {
             _dbPath = Path.Combine(TShock.SavePath, "herobrine");
-
+            
             foreach (var file in Directory.EnumerateFiles(_dbPath))
             {
                 try
@@ -22,7 +22,7 @@ namespace Herobrine.Concrete.Repositories
                     var fs = new FileStream(Path.Combine(_dbPath, file), FileMode.Open, FileAccess.Read);
                     var stream = new StreamReader(fs);
                     var data = JsonConvert.DeserializeObject<JsonPlayer>(stream.ReadToEnd());
-                    _hauntings[data.Id] = data.Hauntings;
+                    _hauntings[data.Id] = InstantiateHauntingsFromJson(data.Id, data.Hauntings);
                 }
                 catch (JsonSerializationException)
                 {
@@ -86,13 +86,25 @@ namespace Herobrine.Concrete.Repositories
             {
                 haunting = (IHaunting)Activator.CreateInstance(hauntingType, new Victim(user));
                 endCond = (IHauntingEndCondition)Activator.CreateInstance(endType, haunting);
+                endCond.Load(jsonHaunting.EndConditionState);
                 haunting.EndCondition = endCond;
             }
-            catch
+            catch (Exception e)
             {
-               
+                Herobrine.Debug("Haunting failed to load. Exception message follows.");  
+                Herobrine.Debug(e.ToString());
             }
             return haunting;
+        }
+
+        private List<IHaunting> InstantiateHauntingsFromJson(int user, List<JsonHaunting> hauntings)
+        {
+            var ret = new List<IHaunting>();
+            foreach (var jsonHaunting in hauntings)
+            {
+                ret.Add(InstantiateHauntingFromJson(user, jsonHaunting));
+            }
+            return ret;
         }
     }
 
