@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using Herobrine.Abstract;
 using Newtonsoft.Json;
@@ -13,7 +14,7 @@ namespace Herobrine.Concrete.Repositories
         /// Internal cache of hauntings for each player.
         /// Used for saving and resuming.
         /// </summary>
-        private Dictionary<int, List<IHaunting>> _hauntings = new Dictionary<int, List<IHaunting>>();
+        private Dictionary<int, JsonPlayer> _hauntings = new Dictionary<int, JsonPlayer>();
         private string _dbPath;
 
         public JsonHauntingRepository()
@@ -30,10 +31,10 @@ namespace Herobrine.Concrete.Repositories
             {
                 try
                 {
-                    var fs = new FileStream(Path.Combine(_dbPath, file), FileMode.Open, FileAccess.Read);
+                    var fs = new FileStream(file, FileMode.Open, FileAccess.Read);
                     var stream = new StreamReader(fs);
                     var data = JsonConvert.DeserializeObject<JsonPlayer>(stream.ReadToEnd());
-                    _hauntings[data.Id] = InstantiateHauntingsFromJson(data.Id, data.Hauntings);
+                    _hauntings[data.Id] = data;
                 }
                 catch (JsonSerializationException)
                 {
@@ -43,10 +44,6 @@ namespace Herobrine.Concrete.Repositories
             }
         }
 
-        //TODO: Change _haunting to be strictly a cache for loaded hauntings.
-        //TODO: Change _haunting to hold JsonPlayers.
-        //TODO: Change saving to use JsonPlayers.
-
         /// <summary>
         /// Gets the player's current hauntings.
         /// </summary>
@@ -54,23 +51,27 @@ namespace Herobrine.Concrete.Repositories
         /// <returns>List of IHaunting or null if the player did not exist in the database.</returns>
         public List<IHaunting> GetSuspendedHauntingsForPlayer(int userId)
         {
-            List<IHaunting> hauntings;
-            if (_hauntings.TryGetValue(userId, out hauntings))
+            JsonPlayer player;
+            if (_hauntings.TryGetValue(userId, out player))
             {
-                return hauntings;
+                return InstantiateHauntingsListFromJson(userId, player.Hauntings);
             }
             return null;
         }
 
         public void SavePlayerHauntings(int userId, List<IHaunting> hauntings)
         {
-            if (_hauntings.ContainsKey(userId))
+            JsonPlayer player;
+            if (_hauntings.TryGetValue(userId, out player))
             {
-                _hauntings[userId] = hauntings;
+                player.Hauntings = GetJsonHauntingsFromList(hauntings);
             }
             else
             {
-                _hauntings.Add(userId, hauntings);
+                player = new JsonPlayer();
+                player.Id = userId;
+                player.Hauntings = GetJsonHauntingsFromList(hauntings);
+                _hauntings.Add(userId, player);
             }
             SavePlayerHauntingsToDisk(userId);
         }
@@ -99,11 +100,10 @@ namespace Herobrine.Concrete.Repositories
             var hauntingType = Herobrine.HauntingTypes.GetHauntingTypeFromName(jsonHaunting.HauntingName);
             var endType = Herobrine.HauntingTypes.GetEndConditionTypeFromName(jsonHaunting.EndConditionName);
             IHaunting haunting = null;
-            IHauntingEndCondition endCond = null;
             try
             {
                 haunting = (IHaunting)Activator.CreateInstance(hauntingType, new Victim(user));
-                endCond = (IHauntingEndCondition)Activator.CreateInstance(endType, haunting);
+                var endCond = (IHauntingEndCondition)Activator.CreateInstance(endType, haunting);
                 endCond.Load(jsonHaunting.EndConditionState);
                 haunting.EndCondition = endCond;
             }
@@ -115,7 +115,21 @@ namespace Herobrine.Concrete.Repositories
             return haunting;
         }
 
-        private List<IHaunting> InstantiateHauntingsFromJson(int user, List<JsonHaunting> hauntings)
+        private List<JsonHaunting> GetJsonHauntingsFromList(List<IHaunting> hauntings)
+        {
+            var ret = new List<JsonHaunting>();
+            foreach (var haunting in hauntings)
+            {
+                var jsonHaunting = new JsonHaunting();
+                jsonHaunting.HauntingName = Herobrine.HauntingTypes.GetHauntingTypeNameFromType(haunting.GetType());
+                jsonHaunting.EndConditionName = Herobrine.HauntingTypes.GetHauntingTypeNameFromType(haunting.EndCondition.GetType());
+                jsonHaunting.EndConditionState = haunting.EndCondition.Save();
+                ret.Add(jsonHaunting);
+            }
+            return ret;
+        }
+
+        private List<IHaunting> InstantiateHauntingsListFromJson(int user, List<JsonHaunting> hauntings)
         {
             var ret = new List<IHaunting>();
             foreach (var jsonHaunting in hauntings)

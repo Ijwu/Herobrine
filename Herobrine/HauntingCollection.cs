@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Herobrine.Attributes;
 using TShockAPI;
 
@@ -124,6 +125,12 @@ namespace Herobrine
                 });
             }
             return ret;
+        }
+
+        public string GetHauntingTypeNameFromType(Type endConditionType)
+        {
+            var attrs = endConditionType.GetCustomAttributes(typeof (HauntingItemDescriptionAttribute));
+            return ((HauntingItemDescriptionAttribute) attrs.First()).Name;
         }
 
         public void ForeachAttribute<T>(Type targetType, Action<T> func) where T : Attribute
