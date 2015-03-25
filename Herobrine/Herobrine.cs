@@ -9,9 +9,12 @@ using Herobrine.Abstract;
 using Herobrine.Attributes;
 using Herobrine.Concrete.Conditions;
 using Herobrine.Concrete.Hauntings;
+using Herobrine.Concrete.Repositories;
 using Terraria;
 using TerrariaApi.Server;
 using TShockAPI;
+using TShockAPI.DB;
+using TShockAPI.Hooks;
 using Utils = TShockAPI.Utils;
 
 namespace Herobrine
@@ -46,6 +49,7 @@ namespace Herobrine
         internal static bool Debugging { get; set; }
 
         public static readonly HauntingTypesContainer HauntingTypes;
+        public static readonly Victim[] Victims = new Victim[TShock.Players.Length]; 
 
         static Herobrine()
         {
@@ -60,9 +64,10 @@ namespace Herobrine
             Debugging = false;
 #endif
             Manager = new HauntingManager();
+            Repository = new JsonHauntingRepository();
             UpdateTimer = new Timer(OnUpdate, null, Timeout.Infinite, 1000/60);
         }
-
+        
         internal static void Debug(string text, params object[] parms)
         {
             if (Debugging)
@@ -71,6 +76,7 @@ namespace Herobrine
 
         public override void Initialize()
         {
+            //PlayerHooks.PlayerPostLogin += OnJoin; 
             ServerApi.Hooks.ServerJoin.Register(this, OnJoin);
             ServerApi.Hooks.ServerLeave.Register(this, OnLeave);
 
@@ -86,18 +92,36 @@ namespace Herobrine
 
         private void OnLeave(LeaveEventArgs args)
         {
-            var userId = TShock.Players[args.Who].UserID;
-            Repository.SavePlayerHauntings(userId, Repository.GetHauntingsForPlayer(userId));
+            var userId = Victims[args.Who].Player.UserID;
+            Debug("Player {0} has left. Attempting to save hauntings.", userId);
+            Repository.SavePlayerHauntings(userId, Manager.GetHauntingsForPlayer(userId));
+            Manager.RemoveHauntingsForPlayer(userId);
+            Victims[args.Who] = null;
         }
 
         private void OnJoin(JoinEventArgs args)
         {
-            var userId = TShock.Players[args.Who].UserID;
-            var hauntings = Repository.GetHauntingsForPlayer(userId);
-            foreach (var haunting in hauntings)
+            Victims[args.Who] = new Victim(TShock.Players[args.Who]);
+            var player = Victims[args.Who];
+
+            var userId = TShock.Users.GetUserID(player.Player.Name);
+
+            if (userId == -1)
             {
-                haunting.EndCondition.Resume();
-                Manager.AddHaunting(haunting);
+                return;
+            }
+
+            Debug("User {0} just logged in.", userId);
+            var hauntings = Repository.GetSuspendedHauntingsForPlayer(userId);
+            Debug("Loaded suspended hauntings for {0}.");
+            if (hauntings != null)
+            {
+                foreach (var haunting in hauntings)
+                {
+                    haunting.EndCondition.Resume();
+                    Manager.AddHaunting(userId, haunting);
+                    Debug("Resumed haunting {0} for player {1}.", haunting.ToString(), userId);
+                }   
             }
         }
 
@@ -276,7 +300,7 @@ namespace Herobrine
                 try
                 {
                     haunting.EndCondition = endCondition;
-                    Manager.AddHaunting(haunting);
+                    Manager.AddHaunting(target.UserID, haunting);
                     args.Player.SendSuccessMessage("You have haunted {0}.", target.Name);
                 }
                 catch (Exception e)

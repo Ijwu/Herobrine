@@ -6,45 +6,81 @@ namespace Herobrine
 {
     public class HauntingManager
     {
-        private List<IHaunting> Hauntings { get; set; }
+        private Dictionary<int, List<IHaunting>> _hauntings = new Dictionary<int, List<IHaunting>>();
 
         public HauntingManager()
         {
-            Hauntings = new List<IHaunting>();
+            _hauntings = new Dictionary<int, List<IHaunting>>();
         }
 
         public void Update()
         {
             var toBeRemoved = new List<IHaunting>();
-            foreach (var haunting in Hauntings)
+            foreach (var player in _hauntings)
             {
-                if (haunting.EndCondition.Update())
+                foreach(var haunting in player.Value)
                 {
-                    toBeRemoved.Add(haunting);
-                    continue;
+                    if (haunting.EndCondition.Update())
+                    {
+                        toBeRemoved.Add(haunting);
+                        continue;
+                    }
+                    haunting.Update();
                 }
-                haunting.Update();
-            }
-            foreach (var haunting in toBeRemoved)
-            {
-                RemoveHaunting(haunting);
+                foreach (var haunting in toBeRemoved)
+                {
+                    RemoveHaunting(player.Key, haunting);
+                }
+                toBeRemoved.Clear();
             }
         }
 
-        public void AddHaunting(IHaunting haunting)
+        public void AddHaunting(int userId, IHaunting haunting)
         {
             if (haunting == null)
                 throw new ArgumentNullException("haunting");
 
-            Hauntings.Add(haunting);
+            if (_hauntings.ContainsKey(userId))
+            {
+                _hauntings[userId].Add(haunting);
+            }
+            else
+            {
+                _hauntings.Add(userId, new List<IHaunting>());
+                _hauntings[userId].Add(haunting);
+            }
         }
 
-        public void RemoveHaunting(IHaunting haunting)
+        public void RemoveHaunting(int userId, IHaunting haunting)
         {
-            if (Hauntings.Contains(haunting))
+            List<IHaunting> hauntings;
+            if (_hauntings.TryGetValue(userId, out hauntings))
             {
                 haunting.CleanUp();
-                Hauntings.Remove(haunting);
+                hauntings.Remove(haunting);
+            }
+        }
+
+        public List<IHaunting> GetHauntingsForPlayer(int userid)
+        {
+            List<IHaunting> ret;
+            if (_hauntings.TryGetValue(userid, out ret))
+            {
+                return ret;
+            }
+            return null;
+        }
+
+        public void RemoveHauntingsForPlayer(int userId)
+        {
+            List<IHaunting> hauntings;
+            if (_hauntings.TryGetValue(userId, out hauntings))
+            {
+                foreach (var haunting in hauntings)
+                {
+                    haunting.CleanUp();
+                    hauntings.Remove(haunting);
+                }
             }
         }
     }

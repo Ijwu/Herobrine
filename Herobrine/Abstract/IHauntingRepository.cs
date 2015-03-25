@@ -4,7 +4,7 @@ namespace Herobrine.Abstract
 {
     public interface IHauntingRepository
     {
-        List<IHaunting> GetHauntingsForPlayer(int userId);
+        List<IHaunting> GetSuspendedHauntingsForPlayer(int userId);
         void SavePlayerHauntings(int userId, List<IHaunting> hauntings);
     }
 }

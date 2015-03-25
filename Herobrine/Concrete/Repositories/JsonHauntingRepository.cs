@@ -9,12 +9,23 @@ namespace Herobrine.Concrete.Repositories
 {
     public class JsonHauntingRepository : IHauntingRepository
     {
+        /// <summary>
+        /// Internal cache of hauntings for each player.
+        /// Used for saving and resuming.
+        /// </summary>
         private Dictionary<int, List<IHaunting>> _hauntings = new Dictionary<int, List<IHaunting>>();
         private string _dbPath;
+
         public JsonHauntingRepository()
         {
             _dbPath = Path.Combine(TShock.SavePath, "herobrine");
-            
+
+            if (!Directory.Exists(_dbPath))
+            {
+                Directory.CreateDirectory(_dbPath);
+                return;
+            }
+
             foreach (var file in Directory.EnumerateFiles(_dbPath))
             {
                 try
@@ -26,17 +37,22 @@ namespace Herobrine.Concrete.Repositories
                 }
                 catch (JsonSerializationException)
                 {
-                    Herobrine.Debug("JSON deserialization exception occured in loading hauntings from file {0}.", file);
+                    Herobrine.Debug("JSON deserialization exception occured in loading hauntings from file {0}.",
+                        file);
                 }
             }
         }
+
+        //TODO: Change _haunting to be strictly a cache for loaded hauntings.
+        //TODO: Change _haunting to hold JsonPlayers.
+        //TODO: Change saving to use JsonPlayers.
 
         /// <summary>
         /// Gets the player's current hauntings.
         /// </summary>
         /// <param name="userId">Player to load hauntings for.</param>
         /// <returns>List of IHaunting or null if the player did not exist in the database.</returns>
-        public List<IHaunting> GetHauntingsForPlayer(int userId)
+        public List<IHaunting> GetSuspendedHauntingsForPlayer(int userId)
         {
             List<IHaunting> hauntings;
             if (_hauntings.TryGetValue(userId, out hauntings))
@@ -63,12 +79,14 @@ namespace Herobrine.Concrete.Repositories
         {
             try
             {
-                var fs = new FileStream(Path.Combine(_dbPath, string.Format("{0}.{1}", userId, ".json")), FileMode.OpenOrCreate, FileAccess.Write);
+                var fs = new FileStream(Path.Combine(_dbPath, string.Format("{0}.{1}", userId, "json")), FileMode.OpenOrCreate, FileAccess.Write);
                 var str = JsonConvert.SerializeObject(_hauntings[userId], Formatting.Indented);
                 using (var sw = new StreamWriter(fs))
                 {
                     sw.Write(str);
                 }
+                fs.Flush();
+                fs.Dispose();
             }
             catch (JsonSerializationException)
             {
