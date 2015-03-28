@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Terraria;
 using TShockAPI;
@@ -16,7 +17,16 @@ namespace Herobrine
 
         public Victim(int userId)
         {
-            Player = TShock.Players.Single(x => x.UserID == userId);
+            var user = TShock.Users.GetUserByID(userId);
+            var player = TShock.Players.Single(x =>
+            {
+                if (x == null)
+                {
+                    return false;
+                }
+                return x.Name == user.Name;
+            });
+            Player = player;
         }
 
         /// <summary>

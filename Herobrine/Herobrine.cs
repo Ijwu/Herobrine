@@ -113,7 +113,7 @@ namespace Herobrine
 
             Debug("User {0} just logged in.", userId);
             var hauntings = Repository.GetSuspendedHauntingsForPlayer(userId);
-            Debug("Loaded suspended hauntings for {0}.");
+            Debug("Loaded suspended hauntings for {0}.", userId);
             if (hauntings != null)
             {
                 foreach (var haunting in hauntings)
