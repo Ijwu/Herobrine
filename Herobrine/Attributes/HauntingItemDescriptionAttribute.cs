@@ -10,7 +10,7 @@ namespace Herobrine.Attributes
         public string Permission { get; set; }
 
         /// <summary>
-        /// Denotes an item for use within the herobrine plugin. May be a haunting or end condition.
+        ///     Denotes an item for use within the herobrine plugin. May be a haunting or end condition.
         /// </summary>
         /// <param name="name">Name of the end condition.</param>
         /// <param name="helpText">Argument usage help text which is displayed when the condition is used incorrectly.</param>

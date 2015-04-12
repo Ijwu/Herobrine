@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using Herobrine.Abstract;
 using Herobrine.Attributes;
-using TerrariaApi.Server;
 
 namespace Herobrine.Concrete.Conditions
 {
@@ -27,7 +26,6 @@ namespace Herobrine.Concrete.Conditions
 
         public void Resume()
         {
-        
         }
 
         public Dictionary<string, string> Save()
@@ -37,7 +35,6 @@ namespace Herobrine.Concrete.Conditions
 
         public void Load(Dictionary<string, string> state)
         {
-            
         }
     }
 }

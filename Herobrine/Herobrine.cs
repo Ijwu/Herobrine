@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using Herobrine.Abstract;
 using Herobrine.Attributes;
 using Herobrine.Concrete.Conditions;
@@ -13,13 +9,11 @@ using Herobrine.Concrete.Repositories;
 using Terraria;
 using TerrariaApi.Server;
 using TShockAPI;
-using TShockAPI.DB;
-using TShockAPI.Hooks;
 using Utils = TShockAPI.Utils;
 
 namespace Herobrine
 {
-    [ApiVersion(1,17)]
+    [ApiVersion(1, 17)]
     public class Herobrine : TerrariaPlugin
     {
         public override string Name
@@ -29,7 +23,7 @@ namespace Herobrine
 
         public override Version Version
         {
-            get { return new Version(1,0,0); }
+            get { return new Version(1, 0, 0); }
         }
 
         public override string Author
@@ -47,7 +41,7 @@ namespace Herobrine
         private Timer UpdateTimer { get; set; }
 
         public static readonly HauntingTypesContainer HauntingTypes;
-        public static readonly Victim[] Victims = new Victim[TShock.Players.Length]; 
+        public static readonly Victim[] Victims = new Victim[TShock.Players.Length];
 
         static Herobrine()
         {
@@ -60,7 +54,7 @@ namespace Herobrine
             Repository = new JsonHauntingRepository();
             UpdateTimer = new Timer(OnUpdate, null, Timeout.Infinite, 1000/60);
         }
-        
+
         internal static void Debug(string text, params object[] parms)
         {
 #if DEBUG
@@ -83,10 +77,10 @@ namespace Herobrine
 
             Commands.ChatCommands.Add(new Command("herobrine.haunt", HauntPlayer, "haunt"));
 
-            HauntingTypes.HauntingTypes.Add(typeof(LightsOutHaunting));
-            HauntingTypes.EndConditionTypes.Add(typeof(TimerEndCondition));
-            HauntingTypes.EndConditionTypes.Add(typeof(DeathEndCondition));
-            HauntingTypes.EndConditionTypes.Add(typeof(LogOutEndCondition));
+            HauntingTypes.HauntingTypes.Add(typeof (LightsOutHaunting));
+            HauntingTypes.EndConditionTypes.Add(typeof (TimerEndCondition));
+            HauntingTypes.EndConditionTypes.Add(typeof (DeathEndCondition));
+            HauntingTypes.EndConditionTypes.Add(typeof (LogOutEndCondition));
 
             UpdateTimer.Change(0, 1000/60);
         }
@@ -122,7 +116,7 @@ namespace Herobrine
                     haunting.EndCondition.Resume();
                     Manager.AddHaunting(userId, haunting);
                     Debug("Resumed haunting {0} for player {1}.", haunting.ToString(), userId);
-                }   
+                }
             }
         }
 
@@ -189,7 +183,8 @@ namespace Herobrine
             }
             else
             {
-                args.Player.SendErrorMessage("Command format: /haunt <Player> <HauntingType> <EndCondition> [ConditionArgs]");
+                args.Player.SendErrorMessage(
+                    "Command format: /haunt <Player> <HauntingType> <EndCondition> [ConditionArgs]");
                 return;
             }
 
@@ -204,14 +199,16 @@ namespace Herobrine
                 //If null, there's an error. Send them the haunts help page as a corrective measure.
                 if (type == null)
                 {
-                    args.Player.SendInfoMessage("Incorrect haunting type '{0}'. Correct types are listed below.", hauntName);
+                    args.Player.SendInfoMessage("Incorrect haunting type '{0}'. Correct types are listed below.",
+                        hauntName);
                     HauntingTypes.DisplayHauntingsHelp(target, 1);
                     return;
                 }
                 //If we found the haunt type successfully we're here now. Check if the player has the permission to use the haunt.
                 var hauntingPermission = HauntingTypes.GetHauntingItemPermission(hauntName);
                 hauntingPermission = string.Format("herobrine.haunting.{0}", hauntingPermission);
-                if (!args.Player.Group.HasPermission(hauntingPermission) || !args.Player.Group.HasPermission("herobrine.haunting.*"))
+                if (!args.Player.Group.HasPermission(hauntingPermission) ||
+                    !args.Player.Group.HasPermission("herobrine.haunting.*"))
                 {
                     //If the player doesn't have the permission, let them know.
                     args.Player.SendErrorMessage("You do not have permission to use the haunt '{0}'.", hauntName);
@@ -223,7 +220,7 @@ namespace Herobrine
                 {
                     haunting = (IHaunting) Activator.CreateInstance(type, new Victim(target));
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     //Gracefully log errors and exit should there be an issue.
                     args.Player.SendErrorMessage(
@@ -235,7 +232,8 @@ namespace Herobrine
             }
             else
             {
-                args.Player.SendErrorMessage("Command format: /haunt <Player> <HauntingType> <EndCondition> [ConditionArgs]");
+                args.Player.SendErrorMessage(
+                    "Command format: /haunt <Player> <HauntingType> <EndCondition> [ConditionArgs]");
                 return;
             }
 
@@ -251,7 +249,8 @@ namespace Herobrine
                 //If the target was not found, show them the conditions help page.
                 if (type == null)
                 {
-                    args.Player.SendInfoMessage("Incorrect condition type '{0}'. Correct types are listed below.", conditionName);
+                    args.Player.SendInfoMessage("Incorrect condition type '{0}'. Correct types are listed below.",
+                        conditionName);
                     HauntingTypes.DisplayConditionsHelp(target, 1);
                     return;
                 }
@@ -259,10 +258,12 @@ namespace Herobrine
                 //Check if the player has the permission to use the condition.
                 var conditionPermission = HauntingTypes.GetHauntingItemPermission(conditionName);
                 conditionPermission = string.Format("herobrine.condition.{0}", conditionPermission);
-                if (!args.Player.Group.HasPermission(conditionPermission) || !args.Player.Group.HasPermission("herobrine.condition.*"))
+                if (!args.Player.Group.HasPermission(conditionPermission) ||
+                    !args.Player.Group.HasPermission("herobrine.condition.*"))
                 {
                     //If the player doesn't have the permission, let them know.
-                    args.Player.SendErrorMessage("You do not have permission to use the end condition '{0}'.", conditionName);
+                    args.Player.SendErrorMessage("You do not have permission to use the end condition '{0}'.",
+                        conditionName);
                     return;
                 }
 
@@ -284,7 +285,8 @@ namespace Herobrine
             }
             else
             {
-                args.Player.SendErrorMessage("Command format: /haunt <Player> <HauntingType> <EndCondition> [ConditionArgs]");
+                args.Player.SendErrorMessage(
+                    "Command format: /haunt <Player> <HauntingType> <EndCondition> [ConditionArgs]");
                 return;
             }
 

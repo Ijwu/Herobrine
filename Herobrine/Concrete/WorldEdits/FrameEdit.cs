@@ -18,7 +18,6 @@ namespace Herobrine.Concrete.WorldEdits
             _framey = framey;
             X = x;
             Y = y;
-            
         }
 
         public void Edit()
@@ -33,6 +32,6 @@ namespace Herobrine.Concrete.WorldEdits
         {
             Main.tile[X, Y].frameX = OldFrameX;
             Main.tile[X, Y].frameY = OldFrameY;
-        }   
+        }
     }
 }

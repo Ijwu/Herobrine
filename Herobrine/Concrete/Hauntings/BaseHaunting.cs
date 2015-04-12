@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Herobrine.Abstract;
 
@@ -11,7 +12,7 @@ namespace Herobrine.Concrete.Hauntings
         public IHauntingEndCondition EndCondition { get; set; }
 
         public List<IWorldEdit> Edits { get; private set; }
-        
+
 
         public BaseHaunting(Victim victim)
         {
@@ -21,7 +22,7 @@ namespace Herobrine.Concrete.Hauntings
 
         public virtual void Update()
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public virtual void CleanUp()

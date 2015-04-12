@@ -38,9 +38,9 @@ namespace Herobrine.Concrete.Hauntings
             36,
             54
         };
+
         public LightsOutHaunting(Victim victim) : base(victim)
         {
-            
         }
 
         public override void Update()

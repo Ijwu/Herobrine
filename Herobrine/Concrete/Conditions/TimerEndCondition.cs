@@ -47,7 +47,7 @@ namespace Herobrine.Concrete.Conditions
         {
             if (!Timer.Enabled)
             {
-                Timer.Start();   
+                Timer.Start();
             }
         }
 
@@ -80,7 +80,7 @@ namespace Herobrine.Concrete.Conditions
                 throw new FormatException("State dictionary provided is formatted incorrectly.");
             }
         }
-        
+
         private void TimerOnElapsed(object sender, ElapsedEventArgs eventArgs)
         {
             Elapsed = true;

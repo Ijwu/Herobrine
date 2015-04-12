@@ -21,19 +21,23 @@ namespace Herobrine
         public void DisplayHauntingsHelp(TSPlayer target, int i)
         {
             PaginationTools.SendPage(target, i, PaginationTools.BuildLinesFromTerms(GetHauntingNamesList(),
-                o => string.Format("{0} - Permission: {1} - {2}", o, GetHauntingItemPermission((string) o), GetHauntingItemHelpText((string) o))), new PaginationTools.Settings()
-                {
-                    FooterFormat = "Type /haunt -h {0} for more."
-                });
+                o =>
+                    string.Format("{0} - Permission: {1} - {2}", o, GetHauntingItemPermission((string) o),
+                        GetHauntingItemHelpText((string) o))), new PaginationTools.Settings()
+                        {
+                            FooterFormat = "Type /haunt -h {0} for more."
+                        });
         }
 
         public void DisplayConditionsHelp(TSPlayer target, int i)
         {
             PaginationTools.SendPage(target, i, PaginationTools.BuildLinesFromTerms(GetEndConditionNamesList(),
-                o => string.Format("{0} - Permission: {1} - {2}", o, GetHauntingItemPermission((string)o), GetHauntingItemHelpText((string)o))), new PaginationTools.Settings()
-                {
-                    FooterFormat = "Type /haunt -c {0} for more."
-                });
+                o =>
+                    string.Format("{0} - Permission: {1} - {2}", o, GetHauntingItemPermission((string) o),
+                        GetHauntingItemHelpText((string) o))), new PaginationTools.Settings()
+                        {
+                            FooterFormat = "Type /haunt -c {0} for more."
+                        });
         }
 
         public string GetHauntingItemHelpText(string name)
@@ -73,10 +77,7 @@ namespace Herobrine
             var ret = new List<string>();
             foreach (var hauntingType in HauntingTypes)
             {
-                ForeachAttribute(hauntingType, delegate(HauntingItemDescriptionAttribute haunt)
-                {
-                    ret.Add(haunt.Name);
-                });
+                ForeachAttribute(hauntingType, delegate(HauntingItemDescriptionAttribute haunt) { ret.Add(haunt.Name); });
             }
             return ret;
         }
@@ -119,10 +120,8 @@ namespace Herobrine
             var ret = new List<string>();
             foreach (var endConditionType in EndConditionTypes)
             {
-                ForeachAttribute(endConditionType, delegate(HauntingItemDescriptionAttribute cond)
-                {
-                    ret.Add(cond.Name);
-                });
+                ForeachAttribute(endConditionType,
+                    delegate(HauntingItemDescriptionAttribute cond) { ret.Add(cond.Name); });
             }
             return ret;
         }

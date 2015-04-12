@@ -9,7 +9,7 @@ namespace Herobrine.Concrete.WorldEdits
         public int Y { get; set; }
         public Tile NewTile { get; set; }
         public Tile OldTile { get; private set; }
-        
+
         public TileEdit(int x, int y, Tile newTile)
         {
             X = x;
@@ -25,7 +25,7 @@ namespace Herobrine.Concrete.WorldEdits
 
         public void Revert()
         {
-            Main.tile[X,Y].CopyFrom(OldTile);
+            Main.tile[X, Y].CopyFrom(OldTile);
         }
     }
 }

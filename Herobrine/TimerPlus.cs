@@ -1,12 +1,14 @@
 ﻿using System;
+using System.Timers;
 
 namespace Herobrine
 {
     /// <summary>
-    /// Copied from http://stackoverflow.com/users/637968/mike on the question http://stackoverflow.com/questions/2278525/system-timers-timer-how-to-get-the-time-remaining-until-elapse.
-    /// Thanks. Mike.
+    ///     Copied from http://stackoverflow.com/users/637968/mike on the question
+    ///     http://stackoverflow.com/questions/2278525/system-timers-timer-how-to-get-the-time-remaining-until-elapse.
+    ///     Thanks. Mike.
     /// </summary>
-    public class TimerPlus : System.Timers.Timer
+    public class TimerPlus : Timer
     {
         private DateTime _dueTime;
 
@@ -17,7 +19,6 @@ namespace Herobrine
 
         public TimerPlus(double interval) : base(interval)
         {
-            
         }
 
         protected new void Dispose()
@@ -28,10 +29,7 @@ namespace Herobrine
 
         public double TimeLeft
         {
-            get
-            {
-                return (_dueTime - DateTime.Now).TotalMilliseconds;
-            }
+            get { return (_dueTime - DateTime.Now).TotalMilliseconds; }
         }
 
         public new void Start()
@@ -40,7 +38,7 @@ namespace Herobrine
             base.Start();
         }
 
-        private void ElapsedAction(object sender, System.Timers.ElapsedEventArgs e)
+        private void ElapsedAction(object sender, ElapsedEventArgs e)
         {
             if (AutoReset)
             {

@@ -18,7 +18,7 @@ namespace Herobrine
             var toBeRemoved = new List<IHaunting>();
             foreach (var player in _hauntings)
             {
-                foreach(var haunting in player.Value)
+                foreach (var haunting in player.Value)
                 {
                     if (haunting.EndCondition.Update())
                     {

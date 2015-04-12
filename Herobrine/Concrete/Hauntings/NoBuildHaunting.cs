@@ -1,11 +1,10 @@
-﻿using System.IO;
-using System.Linq;
+﻿using System.Linq;
 using Herobrine.Attributes;
 using TerrariaApi.Server;
 
 namespace Herobrine.Concrete.Hauntings
 {
-    [HauntingItemDescription("NoBuild", "Randomly breaks blocks that the player places.","nobuild")]
+    [HauntingItemDescription("NoBuild", "Randomly breaks blocks that the player places.", "nobuild")]
     public class NoBuildHaunting : BaseHaunting
     {
         public NoBuildHaunting(Victim victim) : base(victim)

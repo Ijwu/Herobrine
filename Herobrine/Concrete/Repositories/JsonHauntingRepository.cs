@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using Herobrine.Abstract;
 using Newtonsoft.Json;
@@ -11,10 +10,11 @@ namespace Herobrine.Concrete.Repositories
     public class JsonHauntingRepository : IHauntingRepository
     {
         /// <summary>
-        /// Internal cache of hauntings for each player.
-        /// Used for saving and resuming.
+        ///     Internal cache of hauntings for each player.
+        ///     Used for saving and resuming.
         /// </summary>
         private Dictionary<int, JsonPlayer> _hauntings = new Dictionary<int, JsonPlayer>();
+
         private string _dbPath;
 
         public JsonHauntingRepository()
@@ -45,7 +45,7 @@ namespace Herobrine.Concrete.Repositories
         }
 
         /// <summary>
-        /// Gets the player's current hauntings.
+        ///     Gets the player's current hauntings.
         /// </summary>
         /// <param name="userId">Player to load hauntings for.</param>
         /// <returns>List of IHaunting or null if the player did not exist in the database.</returns>
@@ -80,7 +80,8 @@ namespace Herobrine.Concrete.Repositories
         {
             try
             {
-                var fs = new FileStream(Path.Combine(_dbPath, string.Format("{0}.{1}", userId, "json")), FileMode.OpenOrCreate, FileAccess.Write);
+                var fs = new FileStream(Path.Combine(_dbPath, string.Format("{0}.{1}", userId, "json")),
+                    FileMode.OpenOrCreate, FileAccess.Write);
                 var str = JsonConvert.SerializeObject(_hauntings[userId], Formatting.Indented);
                 using (var sw = new StreamWriter(fs))
                 {
@@ -102,14 +103,14 @@ namespace Herobrine.Concrete.Repositories
             IHaunting haunting = null;
             try
             {
-                haunting = (IHaunting)Activator.CreateInstance(hauntingType, new Victim(user));
-                var endCond = (IHauntingEndCondition)Activator.CreateInstance(endType, haunting);
+                haunting = (IHaunting) Activator.CreateInstance(hauntingType, new Victim(user));
+                var endCond = (IHauntingEndCondition) Activator.CreateInstance(endType, haunting);
                 endCond.Load(jsonHaunting.EndConditionState);
                 haunting.EndCondition = endCond;
             }
             catch (Exception e)
             {
-                Herobrine.Debug("Haunting failed to load. Exception message follows.");  
+                Herobrine.Debug("Haunting failed to load. Exception message follows.");
                 Herobrine.Debug(e.ToString());
             }
             return haunting;
@@ -122,7 +123,8 @@ namespace Herobrine.Concrete.Repositories
             {
                 var jsonHaunting = new JsonHaunting();
                 jsonHaunting.HauntingName = Herobrine.HauntingTypes.GetHauntingTypeNameFromType(haunting.GetType());
-                jsonHaunting.EndConditionName = Herobrine.HauntingTypes.GetHauntingTypeNameFromType(haunting.EndCondition.GetType());
+                jsonHaunting.EndConditionName =
+                    Herobrine.HauntingTypes.GetHauntingTypeNameFromType(haunting.EndCondition.GetType());
                 jsonHaunting.EndConditionState = haunting.EndCondition.Save();
                 ret.Add(jsonHaunting);
             }
@@ -143,7 +145,7 @@ namespace Herobrine.Concrete.Repositories
     public class JsonPlayer
     {
         public int Id { get; set; }
-        public List<JsonHaunting> Hauntings { get; set; } 
+        public List<JsonHaunting> Hauntings { get; set; }
     }
 
     public class JsonHaunting

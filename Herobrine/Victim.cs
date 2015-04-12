@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using Terraria;
 using TShockAPI;
@@ -30,7 +29,7 @@ namespace Herobrine
         }
 
         /// <summary>
-        /// Returns a list of points containing all tiles in a square of the given length, centered on the player.
+        ///     Returns a list of points containing all tiles in a square of the given length, centered on the player.
         /// </summary>
         public List<Point> GetTilesInSquare(int length)
         {
