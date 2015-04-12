@@ -36,7 +36,7 @@ namespace Herobrine.Concrete.Repositories
                     var data = JsonConvert.DeserializeObject<JsonPlayer>(stream.ReadToEnd());
                     _hauntings[data.Id] = data;
                 }
-                catch (JsonSerializationException)
+                catch (JsonReaderException)
                 {
                     Herobrine.Debug("JSON deserialization exception occured in loading hauntings from file {0}.",
                         file);
@@ -85,8 +85,8 @@ namespace Herobrine.Concrete.Repositories
                 using (var sw = new StreamWriter(fs))
                 {
                     sw.Write(str);
+                    sw.Flush();
                 }
-                fs.Flush();
                 fs.Dispose();
             }
             catch (JsonSerializationException)

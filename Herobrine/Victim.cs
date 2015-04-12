@@ -48,6 +48,7 @@ namespace Herobrine
                     ret.Add(new Point(playerX + i, playerY + j));
                 }
             }
+            ret = ret.Where(x => x.X > 0 && x.Y > 0 && x.X < Main.maxTilesX && x.Y < Main.maxTilesY).ToList();
             return ret;
         }
     }

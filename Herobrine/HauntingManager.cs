@@ -73,14 +73,15 @@ namespace Herobrine
 
         public void RemoveHauntingsForPlayer(int userId)
         {
+            Herobrine.Debug("Removing hauntings for player {0}", userId);
             List<IHaunting> hauntings;
             if (_hauntings.TryGetValue(userId, out hauntings))
             {
                 foreach (var haunting in hauntings)
                 {
                     haunting.CleanUp();
-                    hauntings.Remove(haunting);
                 }
+                hauntings.Clear();
             }
         }
     }
