@@ -46,8 +46,6 @@ namespace Herobrine
         public IHauntingRepository Repository { get; set; }
         private Timer UpdateTimer { get; set; }
 
-        internal static bool Debugging { get; set; }
-
         public static readonly HauntingTypesContainer HauntingTypes;
         public static readonly Victim[] Victims = new Victim[TShock.Players.Length]; 
 
@@ -58,11 +56,6 @@ namespace Herobrine
 
         public Herobrine(Main game) : base(game)
         {
-#if DEBUG
-            Debugging = true;
-#else
-            Debugging = false;
-#endif
             Manager = new HauntingManager();
             Repository = new JsonHauntingRepository();
             UpdateTimer = new Timer(OnUpdate, null, Timeout.Infinite, 1000/60);
@@ -70,8 +63,16 @@ namespace Herobrine
         
         internal static void Debug(string text, params object[] parms)
         {
-            if (Debugging)
+#if DEBUG
+            try
+            {
                 TShock.Log.ConsoleInfo(text, parms);
+            }
+            catch
+            {
+                Console.WriteLine(text, parms);
+            }
+#endif
         }
 
         public override void Initialize()

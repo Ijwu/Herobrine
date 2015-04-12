@@ -45,7 +45,6 @@ namespace Herobrine.Concrete.Hauntings
 
         public override void Update()
         {
-            Herobrine.Debug("LightsOut: Update start.");
             //Get all tiles in an area around the player.
             var tilesInSquare = Victim.GetTilesInSquare(80);
             //Foreach tile in the area.
@@ -93,7 +92,6 @@ namespace Herobrine.Concrete.Hauntings
                 if (!tilesInSquare.Contains(worldEditPoint))
                 {
                     //If it's not in the list then it's too far away. Add it to the list to be removed.
-                    Herobrine.Debug("LightsOut: Tile is out of bounds. TilePos: ({0},{1})", worldEdit.X, worldEdit.Y);
                     toBeRemoved.Add(worldEdit);
                 }
             }
@@ -103,7 +101,6 @@ namespace Herobrine.Concrete.Hauntings
             {
                 RevertEdit(worldEdit);
             }
-            Herobrine.Debug("LightsOut: Update end.");
         }
     }
 }
